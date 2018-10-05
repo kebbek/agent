@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="row">
+{% for post in object_list %}
+	<div class="col-sm-4">	
+		<div class="card" style="width: 18rem;">
+			<img class="card-img-top" src="/media/images/{{ post.image }}">
+			<div class="card-body">
+				<h5 class="card-title"><a href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h5>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+
+{% endblock %}
