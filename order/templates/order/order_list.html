@@ -7,6 +7,7 @@
 		<table class="table table-bordered">
 			<thead>
 				<tr>
+					<th scope="col">Message</th>
 					<th scope="col">#</th>
 					<th scope="col">Холбоос</th>
 					<th scope="col">Нэр</th>
@@ -23,15 +24,29 @@
 			<tbody>
 				{% for order in object_list %}
 				<tr> 
+					{% for message in order.inboxs.all %}
+					<td>{{ message.message }}</td>
+					{% empty %}
+					<td>Baihgui.</td>
+					{% endfor %}
 					<td>{{ order.order_no }}</td>
+
 					<td><a href="{{ order.url }}" class="btn btn-success btn-sm" target="_">_</a></td>
 					<td>{{ order.product_name }}</td>
 					<td>{{ order.product_count }}</td>
 					<td>{{ order.size }}</td>
 					<td>{{ order.color }}</td>
 					<td>{{ order.created_date|date:"Y-m-d H:i" }}</td>
+					{% if order.get_cost == 'Төлбөр бодогдож байна.' %}
 					<td>{{ order.get_cost }}</td>
-					<td>{{ order.status }}</td>
+					{% else %}
+					<td>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#target_{{ order.order_no }}">
+							{{ order.get_cost }}
+						</button>
+					</td>
+					{% endif %}
+					<td> <i class="glyphicon {{ order.get_icon }}"></i> {{ order.status }}</td>
 					<td>
 						<form method="post" action="{% url 'order:delete' order.id %}">
 							{% csrf_token %}
@@ -39,6 +54,32 @@
 						</form>
 					</td> 
 				</tr>
+
+				<!-- Modal -->
+				<div class="modal fade" id="target_{{ order.order_no }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">{{ order.product_name }}</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<p>Барааны үнэ: {{ order.price.cost }}</p>
+								<p>Тээврийн зардал: {{ order.price.trans_cost }}</p>
+								<p>Хятад: {{ order.price.trans_to_cost }}</p>
+								<p>Uilchilgeenii huls: {{ order.price.service_fee }}</p>
+								<p>Hansh: {{ order.price.exchange }}</p>
+								<p>Niit: {{ order.price.total }}</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Save changes</button>
+							</div>
+						</div>
+					</div>
+				</div>
 				{% empty %}
 				<p>Хоосон байна. <a href="{% url 'order:create' %}" class="btn btn-info">Шинээр захиалах</a></p>
 				{% endfor %}
@@ -46,4 +87,8 @@
 		</table>
 	</div>
 </div>
+
+
+
+
 {% endblock %}

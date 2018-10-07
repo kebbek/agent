@@ -15,9 +15,8 @@ class UserRegisterForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    phone = forms.CharField(label='Утасны дугаар',
-                            widget=forms.NumberInput(attrs={'maxlength': 8}))
+    password = forms.CharField(label='Нууц үг', widget=forms.PasswordInput())
 
     class Meta:
         model = User
-        fields = ('phone', 'password')
+        fields = ('password', )

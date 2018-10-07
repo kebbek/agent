@@ -50,6 +50,10 @@ class Order(models.Model):
     def __str__(self):
         return self.product_name
 
+    def get_icon(self):
+        if self.status == 'Захиалга илгээгдсэн':
+            return 'glyphicon-s'
+
     def get_cost(self):
         try:
             price = Price.objects.get(order_id=self.id)
@@ -57,6 +61,15 @@ class Order(models.Model):
 
         except ObjectDoesNotExist:
             return 'Төлбөр бодогдож байна.'
+
+
+class Inbox(models.Model):
+    order = models.ForeignKey(
+        Order, related_name='inboxs', on_delete=models.CASCADE)
+    message = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.message
 
 
 class Price(models.Model):
@@ -67,12 +80,16 @@ class Price(models.Model):
         _('Хятад - Улаанбаатар хотод ирэх тээврийн зардал'))
     service_fee = models.IntegerField(_('Үйлчилгээний хөлс'))
     exchange = models.IntegerField(_('Ханш'))
-    total = models.FloatField(_('Нийт'))
+    total = models.FloatField(_('Нийт'), editable=False)
 
     def save(self, *args, **kwargs):
+
         order = self.order
         if order.status == STATUS[0][0]:
             order.status = STATUS[1][0]
             order.save()
+
+        self.total = (self.cost + self.trans_cost +
+                      self.trans_to_cost) * self.exchange + self.service_fee
 
         super().save(*args, **kwargs)

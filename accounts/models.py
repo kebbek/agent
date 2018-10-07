@@ -11,6 +11,7 @@ from .manager import AgentUserManager
 class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('Овог'), max_length=15)
     first_name = models.CharField(_('Нэр'), max_length=15)
+    email = models.EmailField(_('Имэйл хаяг'))
     phone_regex = RegexValidator(
         regex=r"(9[0-9])[0-9]{6}|(8[0-9])[0-9]{6}|(7[0-9])[0-9]{6}$", message="Зөв дугаар оруулна уу.")
     phone = models.CharField(

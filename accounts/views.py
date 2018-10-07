@@ -1,5 +1,5 @@
-from django.contrib.auth import login, authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate, logout
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -9,6 +9,12 @@ from .models import User
 
 def home_view(request):
     return HttpResponse('site.')
+
+
+def logout_view(request):
+    logout(request)
+
+    return HttpResponseRedirect(reverse_lazy('home'))
 
 
 class UserRegisterView(generic.CreateView):
@@ -22,7 +28,7 @@ class LoginView(generic.FormView):
     success_url = reverse_lazy('order:list')
 
     def form_valid(self, form):
-        phone = form.cleaned_data['phone']
+        phone = form.cleaned_data['username']
         password = form.cleaned_data['password']
 
         user = authenticate(phone=phone, password=password)
